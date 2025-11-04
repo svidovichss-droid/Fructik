@@ -3,6 +3,7 @@
 (function() {
     'use strict';
     
+    // Инициализируем глобальные объекты если они не существуют
     window.API_KEYS = window.API_KEYS || {
         huggingface: null
     };
