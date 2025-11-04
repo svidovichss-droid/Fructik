@@ -1,5 +1,3 @@
-[file name]: performance-monitor.js
-[file content begin]
 // performance-monitor.js
 // Система мониторинга производительности и аналитики
 class PerformanceMonitor {
@@ -324,4 +322,3 @@ class PerformanceMonitor {
 window.performanceMonitor = new PerformanceMonitor();
 
 console.log('📊 Performance Monitor initialized');
-[file content end]
