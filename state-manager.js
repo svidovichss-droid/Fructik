@@ -20,16 +20,30 @@ class AppState {
             user: {
                 achievements: [],
                 gameProgress: {},
-                preferences: {}
+                preferences: {},
+                messagesSent: 0,
+                uniqueQuestions: 0,
+                homeworkRequests: 0,
+                uniqueFruits: 0,
+                consecutiveDays: 0,
+                totalQuestions: 0
             },
             performance: {
                 messagesRendered: 0,
-                lastOptimization: Date.now()
+                lastOptimization: Date.now(),
+                sessionStart: Date.now()
             }
         };
         this.listeners = new Map();
         this.history = [];
         this.maxHistoryLength = 50;
+        
+        // Автоматическое восстановление состояния
+        this.initialize();
+    }
+    
+    async initialize() {
+        await this.restoreState();
     }
     
     // Установка состояния с уведомлением подписчиков
@@ -201,11 +215,13 @@ class AppState {
                     currentChat: parsed.currentChat,
                     user: { ...state.user, ...parsed.user }
                 }), 'Restore from storage');
+                console.log('✅ Состояние восстановлено из localStorage');
                 return true;
             }
         } catch (error) {
             console.error('State restoration failed:', error);
         }
+        console.log('ℹ️ Состояние не найдено в localStorage, используется начальное состояние');
         return false;
     }
     
@@ -229,15 +245,23 @@ class AppState {
             user: {
                 achievements: [],
                 gameProgress: {},
-                preferences: {}
+                preferences: {},
+                messagesSent: 0,
+                uniqueQuestions: 0,
+                homeworkRequests: 0,
+                uniqueFruits: 0,
+                consecutiveDays: 0,
+                totalQuestions: 0
             },
             performance: {
                 messagesRendered: 0,
-                lastOptimization: Date.now()
+                lastOptimization: Date.now(),
+                sessionStart: Date.now()
             }
         };
         this.history = [];
         this.notifyListeners({}, this.state);
+        console.log('🔄 Состояние приложения сброшено');
     }
     
     // Получение статистики
