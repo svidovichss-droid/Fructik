@@ -21,5 +21,16 @@
         huggingface: decodeKey(ENCRYPTED_KEY)
     };
     
+    // Проверяем и устанавливаем ключ
+    if (window.API_KEYS.huggingface) {
+        console.log('🔑 API ключ успешно загружен');
+        // Устанавливаем ключ в глобальную конфигурацию
+        if (typeof window.API_CONFIG !== 'undefined') {
+            window.API_CONFIG.key = window.API_KEYS.huggingface;
+        }
+    } else {
+        console.error('❌ Не удалось загрузить API ключ');
+    }
+    
     console.log('🔑 API конфигурация инициализирована');
 })();
