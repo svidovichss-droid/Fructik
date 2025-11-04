@@ -1,5 +1,3 @@
-[file name]: script.js
-[file content begin]
 // script.js
 // Основной скрипт приложения с интеграцией всех систем
 const API_CONFIG = {
@@ -488,4 +486,3 @@ window.appState.subscribe('ui.sidebarOpen', (isOpen) => {
         document.body.style.overflow = '';
     }
 });
-[file content end]
