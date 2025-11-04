@@ -1,5 +1,3 @@
-[file name]: config.js
-[file content begin]
 // config.js
 // Расширенная конфигурация с оптимизациями
 (function() {
@@ -108,4 +106,3 @@
     
     console.log('🎯 Расширенная конфигурация Фруктик Чата v2.0 загружена');
 })();
-[file content end]
