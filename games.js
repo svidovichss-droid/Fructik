@@ -1,5 +1,3 @@
-[file name]: games.js
-[file content begin]
 // games.js
 // Образовательные игры система
 class EducationalGames {
@@ -646,4 +644,3 @@ class EducationalGames {
 window.educationalGames = new EducationalGames();
 
 console.log('🎮 Educational Games system initialized');
-[file content end]
