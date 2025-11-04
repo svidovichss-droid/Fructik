@@ -1,5 +1,3 @@
-[file name]: export-utils.js
-[file content begin]
 // export-utils.js
 // Система экспорта чатов
 class ExportUtils {
@@ -311,4 +309,3 @@ class ExportUtils {
 window.exportUtils = new ExportUtils();
 
 console.log('📤 Export Utils system initialized');
-[file content end]
