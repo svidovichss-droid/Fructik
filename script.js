@@ -1,5 +1,3 @@
-[file name]: script.js
-[file content begin]
 // script.js
 // Полностью прописанный основной скрипт с интеграцией всех систем
 const API_CONFIG = {
@@ -1213,4 +1211,3 @@ window.appState.subscribe('ui.loading', (isLoading) => {
             : '<i class="fas fa-paper-plane"></i>';
     }
 });
-[file content end]
