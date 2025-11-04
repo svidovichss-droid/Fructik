@@ -171,6 +171,7 @@ class I18n {
         
         this.currentLang = this.detectLanguage();
         this.fallbackLang = 'ru';
+        console.log('🌍 i18n system initialized with language:', this.currentLang);
     }
     
     // Автоопределение языка
@@ -184,12 +185,16 @@ class I18n {
         if (this.languages[lang]) {
             this.currentLang = lang;
             this.updateUI();
-            window.appState.setState(state => ({
-                ...state,
-                ui: { ...state.ui, language: lang }
-            }), 'Language change');
+            if (window.appState) {
+                window.appState.setState(state => ({
+                    ...state,
+                    ui: { ...state.ui, language: lang }
+                }), 'Language change');
+            }
+            console.log('🌍 Language changed to:', lang);
             return true;
         }
+        console.warn('🌍 Language not supported:', lang);
         return false;
     }
     
@@ -211,17 +216,27 @@ class I18n {
     
     // Обновление интерфейса
     updateUI() {
-        const elements = document.querySelectorAll('[id]');
-        elements.forEach(element => {
-            const translation = this.t(element.id);
-            if (translation && translation !== element.id) {
-                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                    element.placeholder = translation;
-                } else {
-                    element.textContent = translation;
+        try {
+            const elements = document.querySelectorAll('[id]');
+            let updatedCount = 0;
+            
+            elements.forEach(element => {
+                const translation = this.t(element.id);
+                if (translation && translation !== element.id) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translation;
+                        updatedCount++;
+                    } else if (element.textContent !== translation) {
+                        element.textContent = translation;
+                        updatedCount++;
+                    }
                 }
-            }
-        });
+            });
+            
+            console.log(`🌍 Updated ${updatedCount} UI elements for language: ${this.currentLang}`);
+        } catch (error) {
+            console.error('🌍 Error updating UI:', error);
+        }
     }
     
     // Получение списка доступных языков
@@ -258,4 +273,4 @@ class I18n {
 // Создание глобального экземпляра
 window.i18n = new I18n();
 
-console.log('🌍 i18n system initialized');
+console.log('🌍 i18n system ready');
