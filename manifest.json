@@ -1,0 +1,59 @@
+[file name]: manifest.json
+[file content begin]
+{
+  "name": "🍓 Фруктик Чат",
+  "short_name": "Фруктик Чат",
+  "description": "Дружелюбный помощник для детей в учебе с играми и голосовым вводом",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ff6b6b",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ru",
+  "categories": ["education", "kids", "productivity", "entertainment"],
+  "icons": [
+    {
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/mobile.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshots/desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "features": [
+    "Образовательный чат-помощник",
+    "Голосовой ввод",
+    "Образовательные игры",
+    "Система достижений",
+    "Офлайн-работа",
+    "Экспорт чатов"
+  ],
+  "related_applications": []
+}
+[file content end]
