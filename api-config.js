@@ -1,5 +1,3 @@
-[file name]: api-config.js
-[file content begin]
 // api-config.js
 // Конфигурация API ключа
 (function() {
@@ -25,4 +23,3 @@
     
     console.log('🔑 API конфигурация инициализирована');
 })();
-[file content end]
