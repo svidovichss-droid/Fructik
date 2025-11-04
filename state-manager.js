@@ -1,5 +1,3 @@
-[file name]: state-manager.js
-[file content begin]
 // state-manager.js
 // Умное управление состоянием приложения
 class AppState {
@@ -257,4 +255,3 @@ class AppState {
 window.appState = new AppState();
 
 console.log('🧠 State Manager initialized');
-[file content end]
