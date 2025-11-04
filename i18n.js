@@ -1,5 +1,3 @@
-[file name]: i18n.js
-[file content begin]
 // i18n.js
 // Система международной поддержки
 class I18n {
@@ -261,4 +259,3 @@ class I18n {
 window.i18n = new I18n();
 
 console.log('🌍 i18n system initialized');
-[file content end]
