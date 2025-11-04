@@ -1,5 +1,3 @@
-[file name]: voice-recorder.js
-[file content begin]
 // voice-recorder.js
 // Система голосового ввода
 class VoiceRecorder {
@@ -355,4 +353,3 @@ class VoiceRecorder {
 window.voiceRecorder = new VoiceRecorder();
 
 console.log('🎤 Voice Recorder system initialized');
-[file content end]
