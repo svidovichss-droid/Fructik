@@ -1,5 +1,3 @@
-[file name]: sw.js
-[file content begin]
 // sw.js
 // Расширенный Service Worker с поддержкой офлайн-работы и push-уведомлений
 const CACHE_NAME = 'fruity-chat-v2.0.0';
@@ -243,4 +241,3 @@ async function updateContent() {
 }
 
 console.log('🛠️ Enhanced Service Worker registered');
-[file content end]
