@@ -1,5 +1,3 @@
-[file name]: achievements.js
-[file content begin]
 // achievements.js
 // Система достижений и мотивации
 class AchievementSystem {
@@ -377,4 +375,3 @@ class AchievementSystem {
 window.achievementSystem = new AchievementSystem();
 
 console.log('🏆 Achievement System initialized');
-[file content end]
