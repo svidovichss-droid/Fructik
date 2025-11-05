@@ -72,8 +72,6 @@ let isSending = false;
 const MAX_CHATS = 15;
 const MAX_MESSAGE_LENGTH = 1000;
 
-let fruitRainInterval = null;
-let activeFruits = new Set();
 let kidsFeaturesInitialized = false;
 let messageCount = 0;
 
@@ -127,15 +125,12 @@ async function initializeApp() {
         loadChats();
         setupEventListeners();
         setupSwipeGestures();
-        setupApiKeyModal();
         
         // Инициализация детских функций
         if (window.APP_CONFIG && window.APP_CONFIG.kidsMode.enabled) {
             initializeKidsFeatures();
             kidsFeaturesInitialized = true;
         }
-        
-        startContinuousFruitRain();
         
         document.documentElement.setAttribute('data-theme', 'light');
         initializePWA();
@@ -827,7 +822,6 @@ function setupEventListeners() {
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     const clearAllChats = document.getElementById('clearAllChats');
     const chatContainer = document.querySelector('.chat-container');
-    const changeApiKeyBtn = document.getElementById('changeApiKey');
 
     // Обработчики для поля ввода сообщения
     messageInput.addEventListener('input', function() {
@@ -852,7 +846,7 @@ function setupEventListeners() {
     // Основные кнопки
     sendButton.addEventListener('click', sendMessage);
     newChatButton.addEventListener('click', createNewChat);
-    menuButton.addEventListener('click', openSidebar);
+    menuButton.addEventListener('click', toggleSidebar);
     clearAllChats.addEventListener('click', clearAllChatsHandler);
 
     // Боковая панель
@@ -868,20 +862,12 @@ function setupEventListeners() {
                 handleMessageInput();
                 updateCharacterCount();
                 autoResizeTextarea(document.getElementById('messageInput'));
-                playSound('click');
+                if (kidsFeaturesInitialized) {
+                    playSound('click');
+                }
             });
         }
     });
-
-    // Скрытая кнопка API
-    if (changeApiKeyBtn) {
-        changeApiKeyBtn.addEventListener('click', function() {
-            closeSidebarFunction();
-            setTimeout(() => {
-                showApiKeyModal();
-            }, 350);
-        });
-    }
 
     // Фокус на поле ввода при клике на чат
     chatContainer.addEventListener('click', function(e) {
@@ -912,6 +898,18 @@ function setupEventListeners() {
         window.visualViewport.addEventListener('resize', function() {
             setTimeout(scrollToBottom, 100);
         });
+    }
+}
+
+// Новая функция переключения боковой панели
+function toggleSidebar() {
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('chatsSidebar');
+        if (sidebar.classList.contains('active')) {
+            closeSidebarFunction();
+        } else {
+            openSidebar();
+        }
     }
 }
 
@@ -983,289 +981,6 @@ function setupSwipeGestures() {
             }, 300);
         }
     }, { passive: true });
-}
-
-// Настройка модального окна API ключа
-function setupApiKeyModal() {
-    const modal = document.getElementById('apiKeyModal');
-    const closeBtn = document.getElementById('closeApiKeyModal');
-    const saveBtn = document.getElementById('saveApiKey');
-    const testBtn = document.getElementById('testApiKey');
-    const apiKeyInput = document.getElementById('apiKeyInput');
-    const statusEl = document.getElementById('apiKeyStatus');
-    
-    // Скрываем поле ввода API ключа и связанные элементы
-    apiKeyInput.style.display = 'none';
-    statusEl.style.display = 'none';
-    testBtn.style.display = 'none';
-    saveBtn.style.display = 'none';
-    
-    closeBtn.addEventListener('click', hideApiKeyModal);
-    
-    saveBtn.addEventListener('click', async function() {
-        const key = apiKeyInput.value.trim();
-        // Функционал сохранения скрыт
-    });
-    
-    testBtn.addEventListener('click', async function() {
-        // Функционал тестирования скрыт
-    });
-    
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            hideApiKeyModal();
-        }
-    });
-}
-
-// Показать модальное окно API ключа
-function showApiKeyModal() {
-    const modal = document.getElementById('apiKeyModal');
-    modal.style.display = 'block';
-    setTimeout(() => {
-        modal.classList.add('active');
-    }, 10);
-}
-
-// Скрыть модальное окно API ключа
-function hideApiKeyModal() {
-    const modal = document.getElementById('apiKeyModal');
-    modal.classList.remove('active');
-    setTimeout(() => {
-        modal.style.display = 'none';
-    }, 300);
-}
-
-// Показать статус API ключа
-function showApiKeyStatus(message, type) {
-    const statusEl = document.getElementById('apiKeyStatus');
-    statusEl.textContent = message;
-    statusEl.className = 'api-key-status';
-    
-    if (type === 'valid') {
-        statusEl.classList.add('valid');
-    } else if (type === 'invalid') {
-        statusEl.classList.add('invalid');
-    }
-}
-
-// Тестирование API ключа
-async function testApiKey(key) {
-    try {
-        const response = await fetch('https://huggingface.co/api/whoami-v2', {
-            headers: {
-                'Authorization': `Bearer ${key}`
-            }
-        });
-        
-        return response.ok;
-    } catch (error) {
-        console.error('Ошибка проверки API ключа:', error);
-        return false;
-    }
-}
-
-// Запуск непрерывного фруктового дождя
-function startContinuousFruitRain() {
-    const config = window.APP_CONFIG?.fruitRain || {
-        density: 18,
-        spawnInterval: 120,
-        speed: { min: 5, max: 10 },
-        size: { min: 22, max: 36 },
-        opacity: { min: 0.6, max: 0.9 }
-    };
-    
-    if (fruitRainInterval) {
-        clearInterval(fruitRainInterval);
-    }
-    
-    createInitialFruits(config.density);
-    
-    fruitRainInterval = setInterval(() => {
-        if (activeFruits.size < config.density) {
-            createSingleFruit(config);
-        }
-    }, config.spawnInterval);
-    
-    console.log('🌧️ Непрерывный фруктовый дождь запущен');
-}
-
-// Создание начальных фруктов
-function createInitialFruits(count) {
-    const config = window.APP_CONFIG?.fruitRain;
-    for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-            createSingleFruit(config);
-        }, Math.random() * 2000);
-    }
-}
-
-// Создание одного фрукта
-function createSingleFruit(config) {
-    const rainContainer = document.getElementById('fruitRain');
-    if (!rainContainer) return;
-    
-    const fruit = document.createElement('div');
-    const fruitId = 'fruit_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    fruit.id = fruitId;
-    fruit.className = 'fruit';
-    
-    fruit.textContent = getWeightedRandomFruit();
-    fruit.style.left = Math.random() * 100 + 'vw';
-    
-    const animations = ['straight', 'left', 'right', 'sway', 'spiral', 'bounce'];
-    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
-    fruit.classList.add(randomAnimation);
-    
-    const duration = (Math.random() * (config.speed.max - config.speed.min) + config.speed.min) + 's';
-    fruit.style.animationDuration = duration;
-    
-    fruit.style.animationDelay = (Math.random() * 2) + 's';
-    
-    const size = Math.random() * (config.size.max - config.size.min) + config.size.min;
-    fruit.style.fontSize = size + 'px';
-    
-    const opacity = (Math.random() * (config.opacity.max - config.opacity.min) + config.opacity.min).toFixed(2);
-    fruit.style.setProperty('--fruit-opacity', opacity);
-    fruit.style.opacity = opacity;
-    
-    const hueRotate = Math.random() * 60 - 30;
-    fruit.style.filter += ` hue-rotate(${hueRotate}deg)`;
-    
-    if (Math.random() < 0.1) {
-        fruit.classList.add('special');
-        if (Math.random() < 0.5) {
-            fruit.classList.add('glow');
-        }
-    }
-    
-    fruit.style.zIndex = Math.floor(Math.random() * 10) - 5;
-    
-    rainContainer.appendChild(fruit);
-    activeFruits.add(fruitId);
-    
-    const animationTime = (parseFloat(duration) + parseFloat(fruit.style.animationDelay)) * 1000;
-    setTimeout(() => {
-        if (document.getElementById(fruitId)) {
-            document.getElementById(fruitId).remove();
-            activeFruits.delete(fruitId);
-        }
-    }, animationTime);
-    
-    return fruitId;
-}
-
-// Получение случайного фрукта с учетом весов
-function getWeightedRandomFruit() {
-    const totalWeight = FRUIT_EMOJIS.reduce((sum, fruit) => sum + fruit.weight, 0);
-    let random = Math.random() * totalWeight;
-    
-    for (const fruit of FRUIT_EMOJIS) {
-        random -= fruit.weight;
-        if (random <= 0) {
-            return fruit.emoji;
-        }
-    }
-    
-    return FRUIT_EMOJIS[0].emoji;
-}
-
-// Остановка фруктового дождя
-function stopFruitRain() {
-    if (fruitRainInterval) {
-        clearInterval(fruitRainInterval);
-        fruitRainInterval = null;
-    }
-    
-    const rainContainer = document.getElementById('fruitRain');
-    if (rainContainer) {
-        rainContainer.innerHTML = '';
-    }
-    
-    activeFruits.clear();
-}
-
-// Обновление плотности фруктового дождя
-function updateFruitRainDensity(newDensity) {
-    const config = window.APP_CONFIG.fruitRain;
-    config.density = newDensity;
-    
-    stopFruitRain();
-    startContinuousFruitRain();
-}
-
-// Обработчики видимости страницы для оптимизации
-document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-        if (fruitRainInterval) {
-            clearInterval(fruitRainInterval);
-            fruitRainInterval = setInterval(() => {
-                if (activeFruits.size < window.APP_CONFIG.fruitRain.density * 0.5) {
-                    createSingleFruit(window.APP_CONFIG.fruitRain);
-                }
-            }, 500);
-        }
-    } else {
-        stopFruitRain();
-        startContinuousFruitRain();
-    }
-});
-
-// Адаптация к изменению размера окна
-window.addEventListener('resize', function() {
-    const isMobile = window.innerWidth < 768;
-    const newDensity = isMobile ? 12 : 18;
-    
-    if (newDensity !== window.APP_CONFIG.fruitRain.density) {
-        updateFruitRainDensity(newDensity);
-    }
-});
-
-// Автоматическое изменение размера текстового поля
-function autoResizeTextarea(textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-}
-
-// Обработка ввода сообщения
-function handleMessageInput() {
-    const message = document.getElementById('messageInput').value.trim();
-    const sendButton = document.getElementById('sendButton');
-    
-    sendButton.disabled = !message || isSending;
-}
-
-// Обновление счетчика символов
-function updateCharacterCount() {
-    const messageInput = document.getElementById('messageInput');
-    const charCount = document.getElementById('charCount');
-    const count = messageInput.value.length;
-    
-    charCount.textContent = `${count}/${MAX_MESSAGE_LENGTH}`;
-    
-    if (count > MAX_MESSAGE_LENGTH * 0.9) {
-        charCount.classList.add('warning');
-    } else {
-        charCount.classList.remove('warning');
-    }
-}
-
-// Обработка вставки текста
-function handlePaste(e) {
-    const pastedText = e.clipboardData.getData('text');
-    if (pastedText.length > MAX_MESSAGE_LENGTH) {
-        e.preventDefault();
-        const trimmedText = pastedText.substring(0, MAX_MESSAGE_LENGTH);
-        document.getElementById('messageInput').value = trimmedText;
-        showStatus('Текст обрезан до допустимой длины', 'info');
-        updateCharacterCount();
-        autoResizeTextarea(document.getElementById('messageInput'));
-    }
-}
-
-// Проверка открытой клавиатуры
-function isKeyboardOpen() {
-    return window.visualViewport && (window.visualViewport.height < window.innerHeight * 0.7);
 }
 
 // Открытие боковой панели
@@ -1635,6 +1350,53 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
 }
 
+// Автоматическое изменение размера текстового поля
+function autoResizeTextarea(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+}
+
+// Обработка ввода сообщения
+function handleMessageInput() {
+    const message = document.getElementById('messageInput').value.trim();
+    const sendButton = document.getElementById('sendButton');
+    
+    sendButton.disabled = !message || isSending;
+}
+
+// Обновление счетчика символов
+function updateCharacterCount() {
+    const messageInput = document.getElementById('messageInput');
+    const charCount = document.getElementById('charCount');
+    const count = messageInput.value.length;
+    
+    charCount.textContent = `${count}/${MAX_MESSAGE_LENGTH}`;
+    
+    if (count > MAX_MESSAGE_LENGTH * 0.9) {
+        charCount.classList.add('warning');
+    } else {
+        charCount.classList.remove('warning');
+    }
+}
+
+// Обработка вставки текста
+function handlePaste(e) {
+    const pastedText = e.clipboardData.getData('text');
+    if (pastedText.length > MAX_MESSAGE_LENGTH) {
+        e.preventDefault();
+        const trimmedText = pastedText.substring(0, MAX_MESSAGE_LENGTH);
+        document.getElementById('messageInput').value = trimmedText;
+        showStatus('Текст обрезан до допустимой длины', 'info');
+        updateCharacterCount();
+        autoResizeTextarea(document.getElementById('messageInput'));
+    }
+}
+
+// Проверка открытой клавиатуры
+function isKeyboardOpen() {
+    return window.visualViewport && (window.visualViewport.height < window.innerHeight * 0.7);
+}
+
 // Ускоренная функция отправки сообщения
 async function sendMessage() {
     if (isSending) {
@@ -1644,7 +1406,6 @@ async function sendMessage() {
     
     if (!API_CONFIG.key) {
         showStatus('Ошибка: API ключ не настроен', 'error');
-        showApiKeyModal();
         return;
     }
     
@@ -1825,9 +1586,6 @@ function handleAPIError(error) {
     
     if (error.message.includes('401') || error.message.includes('authentication')) {
         userMessage = 'Ошибка авторизации API. Проверьте настройки ключа.';
-        setTimeout(() => {
-            showApiKeyModal();
-        }, 1000);
     } else if (error.message.includes('429')) {
         userMessage = 'Слишком много запросов. Попробуйте позже.';
     } else if (error.message.includes('network') || error.message.includes('Failed to fetch')) {
@@ -1881,6 +1639,21 @@ function addMessageToChat(role, content, animate = true) {
     requestAnimationFrame(() => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     });
+}
+
+// Получение случайного фрукта с учетом весов
+function getWeightedRandomFruit() {
+    const totalWeight = FRUIT_EMOJIS.reduce((sum, fruit) => sum + fruit.weight, 0);
+    let random = Math.random() * totalWeight;
+    
+    for (const fruit of FRUIT_EMOJIS) {
+        random -= fruit.weight;
+        if (random <= 0) {
+            return fruit.emoji;
+        }
+    }
+    
+    return FRUIT_EMOJIS[0].emoji;
 }
 
 // Инициализация PWA
