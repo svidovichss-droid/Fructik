@@ -1,3 +1,4 @@
+// config.js (обновленная конфигурация)
 // config.js
 // Полностью прописанная конфигурация с ускоренными настройками и детскими улучшениями
 (function() {
@@ -36,14 +37,6 @@
             floatingCharacters: true,
             confetti: true,
             rewards: true
-        },
-        fruitRain: {
-            enabled: true,
-            density: 18,
-            spawnInterval: 120,
-            speed: { min: 5, max: 10 },
-            size: { min: 22, max: 36 },
-            opacity: { min: 0.6, max: 0.9 }
         },
         performance: {
             useWebGL: false,
